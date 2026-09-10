@@ -5,7 +5,7 @@ import { cn } from "@/lib/cn";
 import type { KeyVariant } from "@/lib/keys";
 
 const VARIANT_CLASS: Record<KeyVariant, string> = {
-  num: "bg-gradient-to-b from-[#5a2735] to-[#3b1622] text-cream",
+  num: "key-num bg-gradient-to-b from-[#5a2735] to-[#3b1622] text-cream",
   op: "bg-gradient-to-b from-hot to-hot-2 text-white",
   fn: "bg-gradient-to-b from-pale-2 to-pale text-ink",
   eq: "key-eq bg-gradient-to-b from-[#f89ac2] to-[#e5559a] text-white",
