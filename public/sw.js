@@ -1,6 +1,6 @@
 /* RETRO CALC — minimal service worker for installability + offline shell.
    Does not touch app logic; only caches same-origin GET responses. */
-const CACHE = "retro-calc-v1";
+const CACHE = "retro-calc-v2";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
