@@ -5,11 +5,12 @@ import { cn } from "@/lib/cn";
 import type { KeyVariant } from "@/lib/keys";
 
 const VARIANT_CLASS: Record<KeyVariant, string> = {
-  num: "bg-plum text-cream",
-  op: "bg-pink-hot text-void",
-  fn: "bg-grape text-void",
-  eq: "bg-pink-bright text-void",
-  mem: "bg-berry text-pink-pale",
+  num: "key-num bg-gradient-to-b from-[#5a2735] to-[#3b1622] text-cream",
+  op: "bg-gradient-to-b from-hot to-hot-2 text-white",
+  fn: "bg-gradient-to-b from-pale-2 to-pale text-ink",
+  eq: "key-eq bg-gradient-to-b from-[#f89ac2] to-[#e5559a] text-white",
+  mem: "bg-gradient-to-b from-[#e7d1da] to-mauve text-ink",
+  clr: "bg-gradient-to-b from-[#f6c2d5] to-[#efa9c4] text-ink",
 };
 
 interface KeyProps {
@@ -29,11 +30,6 @@ export function Key({
   disabled,
   className,
 }: KeyProps) {
-  // Single-glyph keys (digits, operators, "=", ".", "%") get the big pixel
-  // treatment; multi-character labels (MC, M+, AC, +/-, …) stay smaller so the
-  // chunky pixel font still fits the key.
-  const isGlyph = typeof label === "string" && [...label].length <= 1;
-
   return (
     <button
       type="button"
@@ -41,10 +37,9 @@ export function Key({
       disabled={disabled}
       onClick={onPress}
       className={cn(
-        "key flex h-16 w-full items-center justify-center leading-none sm:h-20",
-        isGlyph
-          ? "text-[26px] sm:text-[34px]"
-          : "text-[13px] sm:text-[16px]",
+        // one uniform pixel-label size for every key — digits, operators and
+        // arrows read at the same scale as "MC" / "M+" / "AC".
+        "key flex h-16 w-full items-center justify-center text-[11px] leading-none sm:h-[78px] sm:text-[14px]",
         VARIANT_CLASS[variant],
         className,
       )}

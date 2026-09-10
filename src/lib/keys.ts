@@ -24,7 +24,7 @@ export type KeyId =
   | "dot"
   | "eq";
 
-export type KeyVariant = "num" | "op" | "fn" | "eq" | "mem";
+export type KeyVariant = "num" | "op" | "fn" | "eq" | "mem" | "clr";
 
 export interface KeyDef {
   id: KeyId;
@@ -40,8 +40,8 @@ export const KEY_LAYOUT: readonly KeyDef[] = [
   { id: "m+", label: "M+", variant: "mem", aria: "메모리 더하기" },
   { id: "m-", label: "M-", variant: "mem", aria: "메모리 빼기" },
 
-  { id: "ac", label: "AC", variant: "fn", aria: "전체 지우기" },
-  { id: "back", label: "<-", variant: "fn", aria: "한 글자 지우기" },
+  { id: "ac", label: "AC", variant: "clr", aria: "전체 지우기" },
+  { id: "back", label: "←", variant: "fn", aria: "한 글자 지우기" },
   { id: "pct", label: "%", variant: "fn", aria: "퍼센트" },
   { id: "div", label: "÷", variant: "op", aria: "나누기" },
 
@@ -53,7 +53,7 @@ export const KEY_LAYOUT: readonly KeyDef[] = [
   { id: "4", label: "4", variant: "num", aria: "4" },
   { id: "5", label: "5", variant: "num", aria: "5" },
   { id: "6", label: "6", variant: "num", aria: "6" },
-  { id: "sub", label: "-", variant: "op", aria: "빼기" },
+  { id: "sub", label: "−", variant: "op", aria: "빼기" },
 
   { id: "1", label: "1", variant: "num", aria: "1" },
   { id: "2", label: "2", variant: "num", aria: "2" },

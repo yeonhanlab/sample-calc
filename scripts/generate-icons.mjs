@@ -14,40 +14,52 @@ const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
 
 // ---- palette (matches src/app/globals.css @theme) --------------------------
 const C = {
-  plum: [0x25, 0x0a, 0x1b, 0xff],
-  void: [0x17, 0x03, 0x10, 0xff],
-  lcd: [0x1b, 0x04, 0x10, 0xff],
-  lcdInk: [0xff, 0x9e, 0xcb, 0xff],
-  hot: [0xff, 0x2d, 0x78, 0xff],
-  bright: [0xff, 0x4f, 0x9e, 0xff],
+  caseBody: [0xf6, 0xd0, 0xdc, 0xff], // soft pink plastic case
+  caseEdge: [0xe0, 0xa2, 0xbc, 0xff], // case border
+  lcdFrame: [0x5a, 0x26, 0x36, 0xff], // bezel around the screen
+  wine: [0x3c, 0x15, 0x21, 0xff], // dark CRT glass
+  lcdInk: [0xf4, 0xb8, 0xd3, 0xff], // glowing pink digits
+  num: [0x49, 0x21, 0x2f, 0xff], // dark aubergine number keys
+  hot: [0xef, 0x78, 0xa7, 0xff], // hot-pink operator column
+  bright: [0xe8, 0x5f, 0x97, 0xff], // brighter "=" key
 };
 
 const GRID = 16;
 
 /** color of logical cell (row r, col c) on the 16x16 design grid */
 function cell(r, c) {
-  // outer 1-cell frame
-  if (r === 0 || r === GRID - 1 || c === 0 || c === GRID - 1) return C.void;
+  // outer 1-cell case border
+  if (r === 0 || r === GRID - 1 || c === 0 || c === GRID - 1) return C.caseEdge;
 
-  // LCD screen: frame rows 1..5 / cols 1..14, glass rows 2..4 / cols 2..13
+  // LCD screen: bezel rows 1..5 / cols 1..14, glass rows 2..4 / cols 2..13
   if (r >= 1 && r <= 5 && c >= 1 && c <= 14) {
     if (r >= 2 && r <= 4 && c >= 2 && c <= 13) {
       // hint of a right-aligned number on the display
-      if (r === 3 && c >= 9 && c <= 12) return C.lcd;
-      return C.lcdInk;
+      if (r === 3 && c >= 8 && c <= 12) return C.lcdInk;
+      return C.wine;
     }
-    return C.void;
+    return C.lcdFrame;
   }
 
-  // 3x3 keypad
-  const rowsInBtn = (r >= 7 && r <= 8) || (r >= 10 && r <= 11) || (r >= 13 && r <= 14);
-  const colsInBtn = (c >= 2 && c <= 3) || (c >= 7 && c <= 8) || (c >= 12 && c <= 13);
-  if (rowsInBtn && colsInBtn) {
-    const isEquals = r >= 13 && c >= 12; // bottom-right key
-    return isEquals ? C.bright : C.hot;
+  // 4-column keypad: 3 dark number columns + 1 hot-pink operator column
+  const rowsInBtn =
+    (r >= 7 && r <= 8) || (r >= 10 && r <= 11) || (r >= 13 && r <= 14);
+  const col =
+    c >= 2 && c <= 3
+      ? 0
+      : c >= 6 && c <= 7
+        ? 1
+        : c >= 9 && c <= 10
+          ? 2
+          : c >= 12 && c <= 13
+            ? 3
+            : -1;
+  if (rowsInBtn && col >= 0) {
+    if (col === 3) return r >= 13 ? C.bright : C.hot; // bottom key = "="
+    return C.num;
   }
 
-  return C.plum;
+  return C.caseBody;
 }
 
 // ---- minimal PNG (RGBA, 8-bit, no interlace) -----------------------------

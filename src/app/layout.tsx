@@ -37,15 +37,17 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#250a1b",
+  themeColor: "#e9b5ca",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
-      <body className={`${pixel.variable} ${lcd.variable}`}>
+    // next/font variables live on <html> so Tailwind's @theme `--font-pixel`
+    // (resolved at :root) can see `--font-pixel-loaded`; on <body> it can't.
+    <html lang="ko" className={`${pixel.variable} ${lcd.variable}`}>
+      <body>
         {children}
         <ServiceWorkerRegister />
       </body>

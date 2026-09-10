@@ -9,7 +9,7 @@ interface KeypadProps {
 
 export function Keypad({ onKey }: KeypadProps) {
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-4 gap-2.5">
       {KEY_LAYOUT.map((k) => (
         <Key
           key={k.id}
