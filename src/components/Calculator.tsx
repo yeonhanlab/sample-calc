@@ -27,9 +27,7 @@ export function Calculator() {
         <section className="case relative w-full bg-gradient-to-b from-case-hi to-case p-4 sm:p-5">
           <header className="mb-5 flex items-start justify-between gap-2">
             <h1 className="font-pixel text-[19px] leading-[1.12] text-ink text-shadow-pixel">
-              RETRO
-              <br />
-              CALC
+              RETRO CALC
             </h1>
 
             <div className="text-xl leading-none tracking-[0.15em] text-hot-2" aria-hidden>
