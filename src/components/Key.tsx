@@ -29,6 +29,11 @@ export function Key({
   disabled,
   className,
 }: KeyProps) {
+  // Single-glyph keys (digits, operators, "=", ".", "%") get the big pixel
+  // treatment; multi-character labels (MC, M+, AC, +/-, …) stay smaller so the
+  // chunky pixel font still fits the key.
+  const isGlyph = typeof label === "string" && [...label].length <= 1;
+
   return (
     <button
       type="button"
@@ -36,7 +41,10 @@ export function Key({
       disabled={disabled}
       onClick={onPress}
       className={cn(
-        "key flex h-14 w-full items-center justify-center text-[11px] sm:h-16 sm:text-sm",
+        "key flex h-16 w-full items-center justify-center leading-none sm:h-20",
+        isGlyph
+          ? "text-[26px] sm:text-[34px]"
+          : "text-[13px] sm:text-[16px]",
         VARIANT_CLASS[variant],
         className,
       )}
