@@ -26,33 +26,14 @@ export function Calculator() {
         {/* ---- console -------------------------------------------------- */}
         <section className="case relative w-full bg-gradient-to-b from-case-hi to-case p-4 sm:p-5">
           <header className="mb-5 flex items-start justify-between gap-2">
-            <div>
-              <h1 className="font-pixel text-[19px] leading-[1.12] text-ink text-shadow-pixel">
-                RETRO
-                <br />
-                CALC
-              </h1>
-              <p className="mt-3 font-pixel text-[8px] leading-[1.9] tracking-[0.18em] text-ink-soft">
-                SIMPLE MATH
-                <br />
-                BETTER DAYS
-              </p>
-            </div>
+            <h1 className="font-pixel text-[19px] leading-[1.12] text-ink text-shadow-pixel">
+              RETRO
+              <br />
+              CALC
+            </h1>
 
-            <div className="text-right">
-              <div className="text-xl leading-none tracking-[0.15em] text-hot-2" aria-hidden>
-                ♥ ♥ ♡
-              </div>
-              <p className="mt-3 font-pixel text-[8px] leading-[1.9] tracking-[0.18em] text-ink-soft">
-                CALCULATE
-                <br />
-                YOUR
-                <br />
-                BRIGHTER
-                <br />
-                TOMORROW
-                <span className="blink ml-0.5">_</span>
-              </p>
+            <div className="text-xl leading-none tracking-[0.15em] text-hot-2" aria-hidden>
+              ♥ ♥ ♡
             </div>
           </header>
 
