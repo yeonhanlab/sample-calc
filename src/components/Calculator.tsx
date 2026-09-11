@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import { useCalculator, type Settings } from "@/hooks/useCalculator";
 import { Display } from "./Display";
@@ -20,14 +21,70 @@ export function Calculator() {
 
   const memoryActive = state.memory !== "0" && state.memory !== "";
 
+  // The keypad's natural size can exceed short/narrow phone screens. Rather
+  // than letting the first screen scroll or clip, measure the console
+  // against the viewport and scale it down uniformly so the calculator
+  // itself always fits on one screen — history and the footer credits live
+  // below it in normal, scrollable flow.
+  const screenRef = useRef<HTMLDivElement>(null);
+  const caseRef = useRef<HTMLElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useLayoutEffect(() => {
+    const screen = screenRef.current;
+    const caseEl = caseRef.current;
+    if (!screen || !caseEl) return;
+
+    const fit = () => {
+      const caseWidth = caseEl.scrollWidth;
+      const caseHeight = caseEl.scrollHeight;
+      if (!caseWidth || !caseHeight) return;
+      // clientWidth/Height include the screen's own padding, so subtract it
+      // to get the space actually left for the case — otherwise the case
+      // scales up to fill the padding too and the breathing room disappears.
+      const style = getComputedStyle(screen);
+      const availWidth =
+        screen.clientWidth -
+        parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight);
+      const availHeight =
+        screen.clientHeight -
+        parseFloat(style.paddingTop) -
+        parseFloat(style.paddingBottom);
+      const next = Math.min(1, availWidth / caseWidth, availHeight / caseHeight);
+      setScale(Number.isFinite(next) && next > 0 ? next : 1);
+    };
+
+    fit();
+
+    const observer = new ResizeObserver(fit);
+    observer.observe(screen);
+    observer.observe(caseEl);
+    window.addEventListener("resize", fit);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", fit);
+    };
+  }, []);
+
   return (
-    <main className="flex min-h-full w-full flex-col items-center justify-center gap-6 p-4 sm:p-8">
-      <div className="flex w-full max-w-sm flex-col items-center justify-center gap-6">
-        {/* ---- console -------------------------------------------------- */}
-        <section className="case relative w-full bg-gradient-to-b from-case-hi to-case p-4 sm:p-5">
+    <main className="flex w-full flex-col items-center">
+      {/* ---- first screen: just the calculator, always fits, no scroll - */}
+      <div
+        ref={screenRef}
+        className="flex h-dvh w-full items-center justify-center overflow-hidden p-6 sm:p-10"
+      >
+        <section
+          ref={caseRef}
+          style={{ transform: `scale(${scale})`, transformOrigin: "center" }}
+          className="case relative w-full max-w-sm bg-gradient-to-b from-case-hi to-case p-4 sm:p-5"
+        >
           <header className="mb-5 flex items-start justify-between gap-2">
             <h1 className="font-pixel text-[19px] leading-[1.12] text-ink text-shadow-pixel">
-              RETRO CALC
+              RETRO
+              <br />
+              CALC
             </h1>
 
             <div className="text-xl leading-none tracking-[0.15em] text-hot-2" aria-hidden>
@@ -67,8 +124,10 @@ export function Calculator() {
 
           <Keypad onKey={handleKey} />
         </section>
+      </div>
 
-        {/* ---- history (below the console) --------------------------- */}
+      {/* ---- history + footer: scroll down from the first screen ------- */}
+      <div className="flex w-full max-w-sm flex-col items-center gap-6 px-4 pt-6 pb-8 sm:px-8 sm:pt-10 sm:pb-10">
         {settings.showHistory && (
           <HistoryPanel
             entries={history}
@@ -77,13 +136,13 @@ export function Calculator() {
             onClear={clearHistory}
           />
         )}
-      </div>
 
-      <p className="text-center font-pixel text-[8px] leading-relaxed text-ink-soft">
-        NEXT.JS 16 · TYPESCRIPT · DECIMAL.JS · TAILWIND
-        <br />
-        KEYBOARD READY · SAVED TO THIS BROWSER
-      </p>
+        <p className="text-center font-pixel text-[8px] leading-relaxed text-ink-soft">
+          NEXT.JS 16 · TYPESCRIPT · DECIMAL.JS · TAILWIND
+          <br />
+          KEYBOARD READY · SAVED TO THIS BROWSER
+        </p>
+      </div>
     </main>
   );
 }
