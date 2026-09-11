@@ -21,11 +21,11 @@ export function Calculator() {
 
   const memoryActive = state.memory !== "0" && state.memory !== "";
 
-  // The keypad's natural size can exceed short/narrow phone screens. Rather
-  // than letting the first screen scroll or clip, measure the console
-  // against the viewport and scale it down uniformly so the calculator
-  // itself always fits on one screen — history and the footer credits live
-  // below it in normal, scrollable flow.
+  // The keypad's natural height can exceed short phone screens. Rather than
+  // letting the first screen scroll or clip, measure the console against
+  // the viewport and scale it down vertically so it always fits on one
+  // screen — history and the footer credits live below it in normal,
+  // scrollable flow.
   const screenRef = useRef<HTMLDivElement>(null);
   const caseRef = useRef<HTMLElement>(null);
   const [scale, setScale] = useState(1);
@@ -36,22 +36,19 @@ export function Calculator() {
     if (!screen || !caseEl) return;
 
     const fit = () => {
-      const caseWidth = caseEl.scrollWidth;
       const caseHeight = caseEl.scrollHeight;
-      if (!caseWidth || !caseHeight) return;
-      // clientWidth/Height include the screen's own padding, so subtract it
-      // to get the space actually left for the case — otherwise the case
-      // scales up to fill the padding too and the breathing room disappears.
+      if (!caseHeight) return;
+      // The case's width is already bounded by the same max-w-sm + side
+      // padding as the history panel below, so it never needs to shrink
+      // horizontally — only scale vertically, or the calculator would end
+      // up visibly narrower than the history panel whenever height is the
+      // tight dimension.
       const style = getComputedStyle(screen);
-      const availWidth =
-        screen.clientWidth -
-        parseFloat(style.paddingLeft) -
-        parseFloat(style.paddingRight);
       const availHeight =
         screen.clientHeight -
         parseFloat(style.paddingTop) -
         parseFloat(style.paddingBottom);
-      const next = Math.min(1, availWidth / caseWidth, availHeight / caseHeight);
+      const next = Math.min(1, availHeight / caseHeight);
       setScale(Number.isFinite(next) && next > 0 ? next : 1);
     };
 
@@ -73,11 +70,11 @@ export function Calculator() {
       {/* ---- first screen: just the calculator, always fits, no scroll - */}
       <div
         ref={screenRef}
-        className="flex h-dvh w-full items-center justify-center overflow-hidden p-6 sm:p-10"
+        className="flex h-dvh w-full items-center justify-center overflow-hidden px-4 py-6 sm:px-8 sm:py-10"
       >
         <section
           ref={caseRef}
-          style={{ transform: `scale(${scale})`, transformOrigin: "center" }}
+          style={{ transform: `scaleY(${scale})`, transformOrigin: "center" }}
           className="case relative w-full max-w-sm bg-gradient-to-b from-case-hi to-case p-4 sm:p-5"
         >
           <header className="mb-5 flex items-start justify-between gap-2">
@@ -127,21 +124,25 @@ export function Calculator() {
       </div>
 
       {/* ---- history + footer: scroll down from the first screen ------- */}
-      <div className="flex w-full max-w-sm flex-col items-center gap-6 px-4 pt-6 pb-8 sm:px-8 sm:pt-10 sm:pb-10">
-        {settings.showHistory && (
-          <HistoryPanel
-            entries={history}
-            onPick={pickHistory}
-            onDelete={deleteHistory}
-            onClear={clearHistory}
-          />
-        )}
+      <div className="flex w-full flex-col items-center px-4 pt-6 pb-8 sm:px-8 sm:pt-10 sm:pb-10">
+        {/* same max-w-sm + side padding as the console above, so the
+            history panel lines up at the same width as the calculator */}
+        <div className="flex w-full max-w-sm flex-col items-center gap-6">
+          {settings.showHistory && (
+            <HistoryPanel
+              entries={history}
+              onPick={pickHistory}
+              onDelete={deleteHistory}
+              onClear={clearHistory}
+            />
+          )}
 
-        <p className="text-center font-pixel text-[8px] leading-relaxed text-ink-soft">
-          NEXT.JS 16 · TYPESCRIPT · DECIMAL.JS · TAILWIND
-          <br />
-          KEYBOARD READY · SAVED TO THIS BROWSER
-        </p>
+          <p className="text-center font-pixel text-[8px] leading-relaxed text-ink-soft">
+            NEXT.JS 16 · TYPESCRIPT · DECIMAL.JS · TAILWIND
+            <br />
+            KEYBOARD READY · SAVED TO THIS BROWSER
+          </p>
+        </div>
       </div>
     </main>
   );
