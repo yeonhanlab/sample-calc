@@ -34,17 +34,6 @@
   --font-lcd: var(--font-lcd-loaded, "Courier New"), ui-monospace, monospace;
 }
 
-@keyframes blink {
-  0%,
-  49% {
-    opacity: 1;
-  }
-  50%,
-  100% {
-    opacity: 0;
-  }
-}
-
 @layer base {
   html,
   body {
@@ -178,10 +167,6 @@
 @layer utilities {
   .text-shadow-pixel {
     text-shadow: 2px 2px 0 rgba(122, 44, 66, 0.28);
-  }
-
-  .blink {
-    animation: blink 1s steps(1, jump-none) infinite;
   }
 
   .scrollbar-pixel {

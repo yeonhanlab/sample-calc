@@ -119,64 +119,25 @@ export function useCalculator() {
   }, [settings.sound]);
 
   // ---- hydrate from localStorage (client only) --------------------------------
+  // The working value/expression always starts fresh at 0 on launch — only
+  // memory, history, and settings carry over between sessions.
   useEffect(() => {
-    const savedLast = loadJSON<Partial<CalculatorState>>(KEYS.lastState, {});
     const savedMemory = loadJSON<{ memory: string }>(KEYS.memory, {
       memory: "0",
     });
     const savedHistory = loadJSON<HistoryEntry[]>(KEYS.history, []);
     const savedSettings = loadJSON<Partial<Settings>>(KEYS.settings, {});
 
-    const value = sanitizeValue(savedLast.value);
-    lastLogged.current = `${savedLast.expression ?? ""}|${value}`;
-
     dispatch({
       type: "hydrate",
       state: {
-        value,
-        accumulator:
-          typeof savedLast.accumulator === "string"
-            ? savedLast.accumulator
-            : null,
-        operator: savedLast.operator ?? null,
-        overwrite: savedLast.overwrite ?? true,
-        lastOperator: savedLast.lastOperator ?? null,
-        lastOperand:
-          typeof savedLast.lastOperand === "string"
-            ? savedLast.lastOperand
-            : null,
-        expression: savedLast.expression ?? "",
         memory: sanitizeValue(savedMemory.memory),
-        error: false,
       },
     });
     setHistory(Array.isArray(savedHistory) ? savedHistory : []);
     setSettings({ ...DEFAULT_SETTINGS, ...savedSettings });
     setHydrated(true);
   }, []);
-
-  // ---- persistence ----------------------------------------------------------
-  useEffect(() => {
-    if (!hydrated) return;
-    const {
-      value,
-      accumulator,
-      operator,
-      overwrite,
-      lastOperator,
-      lastOperand,
-      expression,
-    } = state;
-    saveJSON(KEYS.lastState, {
-      value,
-      accumulator,
-      operator,
-      overwrite,
-      lastOperator,
-      lastOperand,
-      expression,
-    });
-  }, [state, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;

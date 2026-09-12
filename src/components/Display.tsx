@@ -68,7 +68,6 @@ export function Display({
             role="status"
           >
             {shown}
-            {!error && <span className="blink ml-1">_</span>}
           </div>
 
           <div className="mt-1 flex h-4 items-center justify-end font-lcd text-[14px] text-lcd-dim/70">
