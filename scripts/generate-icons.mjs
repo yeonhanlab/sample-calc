@@ -24,21 +24,34 @@ const C = {
   bright: [0xe8, 0x5f, 0x97, 0xff], // brighter "=" key
 };
 
+// Favicon-only variant: same calculator shape, but the dark bezel/keys are
+// swapped for lighter pinks so the design still reads as pink once browsers
+// downscale it to a 16-32px tab icon (the app icon's dark wine bezel turns
+// into a muddy purple average at that size).
+const FAVICON_C = {
+  ...C,
+  lcdFrame: C.hot, // bezel: hot pink instead of dark wine
+  wine: C.bright, // "glass": bright pink instead of near-black
+  lcdInk: C.caseBody, // digit hint: pale pink instead of glowing pink-on-dark
+  num: C.caseEdge, // number keys: case-edge pink instead of dark aubergine
+};
+
 const GRID = 16;
 
 /** color of logical cell (row r, col c) on the 16x16 design grid */
-function cell(r, c) {
+function cell(r, c, palette = C) {
   // outer 1-cell case border
-  if (r === 0 || r === GRID - 1 || c === 0 || c === GRID - 1) return C.caseEdge;
+  if (r === 0 || r === GRID - 1 || c === 0 || c === GRID - 1)
+    return palette.caseEdge;
 
   // LCD screen: bezel rows 1..5 / cols 1..14, glass rows 2..4 / cols 2..13
   if (r >= 1 && r <= 5 && c >= 1 && c <= 14) {
     if (r >= 2 && r <= 4 && c >= 2 && c <= 13) {
       // hint of a right-aligned number on the display
-      if (r === 3 && c >= 8 && c <= 12) return C.lcdInk;
-      return C.wine;
+      if (r === 3 && c >= 8 && c <= 12) return palette.lcdInk;
+      return palette.wine;
     }
-    return C.lcdFrame;
+    return palette.lcdFrame;
   }
 
   // 4-column keypad: 3 dark number columns + 1 hot-pink operator column
@@ -55,11 +68,11 @@ function cell(r, c) {
             ? 3
             : -1;
   if (rowsInBtn && col >= 0) {
-    if (col === 3) return r >= 13 ? C.bright : C.hot; // bottom key = "="
-    return C.num;
+    if (col === 3) return r >= 13 ? palette.bright : palette.hot; // bottom key = "="
+    return palette.num;
   }
 
-  return C.caseBody;
+  return palette.caseBody;
 }
 
 // ---- minimal PNG (RGBA, 8-bit, no interlace) -----------------------------
@@ -89,7 +102,7 @@ function chunk(type, data) {
   return out;
 }
 
-function encodePng(size) {
+function encodePng(size, palette = C) {
   const scale = size / GRID;
   const stride = size * 4;
   const raw = Buffer.alloc((stride + 1) * size);
@@ -98,7 +111,7 @@ function encodePng(size) {
     raw[y * (stride + 1)] = 0; // per-row PNG predictor byte (0 = none)
     const r = Math.floor(y / scale);
     for (let x = 0; x < size; x++) {
-      const [rr, gg, bb, aa] = cell(r, Math.floor(x / scale));
+      const [rr, gg, bb, aa] = cell(r, Math.floor(x / scale), palette);
       const o = y * (stride + 1) + 1 + x * 4;
       raw[o] = rr;
       raw[o + 1] = gg;
@@ -128,5 +141,12 @@ mkdirSync(OUT_DIR, { recursive: true });
 for (const size of [192, 512]) {
   const file = join(OUT_DIR, `icon-${size}.png`);
   writeFileSync(file, encodePng(size));
+  console.log(`wrote ${file}`);
+}
+
+// browser tab favicon: small sizes only, pink-dominant palette
+for (const size of [16, 32, 48]) {
+  const file = join(OUT_DIR, `favicon-${size}.png`);
+  writeFileSync(file, encodePng(size, FAVICON_C));
   console.log(`wrote ${file}`);
 }

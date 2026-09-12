@@ -28,9 +28,15 @@ export const metadata: Metadata = {
     statusBarStyle: "black",
   },
   icons: {
+    // Browser tab favicon: a pink-dominant variant of the app icon — at
+    // 16-32px the app icon's dark LCD bezel downscales into a muddy purple
+    // average, so the tab icon gets its own lighter palette (see
+    // scripts/generate-icons.mjs). The app/home-screen icon (apple +
+    // manifest.ts) keeps the original dark-bezel design.
     icon: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48.png", sizes: "48x48", type: "image/png" },
     ],
     apple: [{ url: "/icon-192.png", sizes: "192x192", type: "image/png" }],
   },
